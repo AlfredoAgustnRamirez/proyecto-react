@@ -1,0 +1,29 @@
+/* ===== HERO ===== */
+.hero {
+  background: linear-gradient(135deg, var(--primary), #8b5cf6);
+  color: white;
+  text-align: center;
+  padding: 4rem 1.5rem;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.95;
+}
+
+.hero-btn {
+  background: white;
+  color: var(--primary);
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: var(--radius-full);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}

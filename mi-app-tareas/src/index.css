@@ -1,0 +1,11 @@
+/* Importar todos los estilos - rutas corregidas */
+@import './styles/global.css';
+@import './styles/navbar.css';
+@import './styles/hero.css';
+@import './styles/filters.css';
+@import './styles/product-card.css';
+@import './styles/cart-modal.css';
+@import './styles/footer.css';
+@import './styles/login-modal.css';
+@import './styles/admin-panel.css';
+@import './styles/admin-modal.css';

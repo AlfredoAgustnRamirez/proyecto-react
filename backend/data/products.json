@@ -1,0 +1,52 @@
+[
+  {
+    "id": 2,
+    "nombre": "iPhone 15 Pro",
+    "precio": 1099.99,
+    "categoria": "telefonos",
+    "imagen": "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=300",
+    "descripcion": "Chip A17 Pro, cámara 48MP, titanio, USB-C.",
+    "stock": 10,
+    "rating": 4.9
+  },
+  {
+    "id": 3,
+    "nombre": "MacBook Pro M3",
+    "precio": 1999.99,
+    "categoria": "computadoras",
+    "imagen": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=300",
+    "descripcion": "Chip M3 Pro, 16GB RAM, SSD 512GB.",
+    "stock": 5,
+    "rating": 4.9
+  },
+  {
+    "id": 4,
+    "nombre": "Teclado Logitech MX",
+    "precio": 129.99,
+    "categoria": "accesorios",
+    "imagen": "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=300",
+    "descripcion": "Teclado mecánico inalámbrico, retroiluminación.",
+    "stock": 25,
+    "rating": 4.6
+  },
+  {
+    "id": 5,
+    "nombre": "Monitor LG UltraWide",
+    "precio": 449.99,
+    "categoria": "monitores",
+    "imagen": "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=300",
+    "descripcion": "Pantalla curva 34\", 3440x1440, 100Hz.",
+    "stock": 12,
+    "rating": 4.7
+  },
+  {
+    "id": 6,
+    "nombre": "Mouse Logitech MX Master",
+    "precio": 89.99,
+    "categoria": "accesorios",
+    "imagen": "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=300",
+    "descripcion": "Mouse inalámbrico, 8000 DPI, ergonómico.",
+    "stock": 30,
+    "rating": 4.8
+  }
+]
