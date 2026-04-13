@@ -1,4 +1,3 @@
-// src/api.ts
 import axios, { AxiosResponse } from 'axios';
 
 export interface Product {
@@ -23,7 +22,6 @@ export interface LoginResponse {
   user: User;
 }
 
-// ✅ Cambiá la URL según tu backend
 const API_URL = 'http://localhost:3000/api';
 
 const API = axios.create({
@@ -33,13 +31,11 @@ const API = axios.create({
   },
 });
 
-// Interceptor para logs
 API.interceptors.request.use((config) => {
   console.log(`📡 ${config.method?.toUpperCase()} ${config.url}`);
   return config;
 });
 
-// Interceptor para agregar token automáticamente
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
