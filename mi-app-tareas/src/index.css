@@ -1,4 +1,3 @@
-/* Importar todos los estilos - rutas corregidas */
 @import './styles/global.css';
 @import './styles/navbar.css';
 @import './styles/hero.css';
@@ -9,3 +8,4 @@
 @import './styles/login-modal.css';
 @import './styles/admin-panel.css';
 @import './styles/admin-modal.css';
+@import './styles/productList.css';

@@ -1,12 +1,13 @@
+// src/components/Navbar.jsx
 import { useState } from 'react';
 import { useCarrito } from '../context/CarritoContext';
 import { useAuth } from '../context/AuthContext';
-import { CarritoModal } from './CarritoModal';
-import { AdminPanel } from './AdminPanel';
+import CarritoModal from './CarritoModal';
+import AdminPanel from './AdminPanel';
 
 export const Navbar = ({ onLoginClick }) => {
   const { totalItems } = useCarrito();
-  const { user, logout } = useAuth();
+  const { usuario, logout } = useAuth();
   const [isCarritoOpen, setIsCarritoOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
 
@@ -35,15 +36,15 @@ export const Navbar = ({ onLoginClick }) => {
           </div>
           
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            {user ? (
+            {usuario ? (
               <>
-                {user.role === 'admin' && (
+                {usuario.rol === 'admin' && (
                   <button onClick={handleOpenAdmin} className="admin-btn">
                     👑 Admin
                   </button>
                 )}
                 <span style={{ color: 'var(--gray)', fontSize: '0.9rem' }}>
-                  Hola, {user.name}
+                  Hola, {usuario.nombre}
                 </span>
                 <button onClick={logout} className="cart-btn">
                   Salir
@@ -67,7 +68,9 @@ export const Navbar = ({ onLoginClick }) => {
         </div>
       </nav>
 
-      <CarritoModal isOpen={isCarritoOpen} onClose={() => setIsCarritoOpen(false)} />
+      {isCarritoOpen && (
+        <CarritoModal onClose={() => setIsCarritoOpen(false)} />
+      )}
       
       {isAdminOpen && (
         <AdminPanel onClose={handleCloseAdmin} />
@@ -75,3 +78,5 @@ export const Navbar = ({ onLoginClick }) => {
     </>
   );
 };
+
+export default Navbar;

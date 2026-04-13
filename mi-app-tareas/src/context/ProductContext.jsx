@@ -1,50 +1,81 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { getProducts } from '../services/api';
+import React, { createContext, useState, useContext } from 'react';
+import { getProducts, getProduct, createProduct, updateProduct, deleteProduct } from "../api/config"; 
 
 const ProductContext = createContext();
 
-export const useProducts = () => {
-  const context = useContext(ProductContext);
-  if (!context) {
-    throw new Error('useProducts debe usarse dentro de ProductProvider');
-  }
-  return context;
-};
-
 export const ProductProvider = ({ children }) => {
-  const [productos, setProductos] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    cargarProductos();
-  }, []);
-
-  const cargarProductos = async () => {
+  const fetchProducts = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await getProducts();
-      setProductos(response.data);
+      const response = await getProducts(); 
+      setProducts(response.data); 
       setError(null);
-    } catch (error) {
-      console.error('Error al cargar productos:', error);
-      setError('Error al cargar los productos');
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const categorias = ['todos', ...new Set(productos.map(p => p.categoria))];
+  const addProduct = async (product) => {
+    try {
+      const response = await createProduct(product);
+      const newProduct = response.data; 
+      setProducts([...products, newProduct]);
+      return newProduct;
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+      throw err;
+    }
+  };
+
+  const editProduct = async (id, product) => {
+    try {
+      const response = await updateProduct(id, product);
+      const updatedProduct = response.data; 
+      setProducts(products.map(p => p.id === id ? updatedProduct : p));
+      return updatedProduct;
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+      throw err;
+    }
+  };
+
+  const removeProduct = async (id) => {
+    try {
+      await deleteProduct(id);
+      setProducts(products.filter(p => p.id !== id));
+    } catch (err) {
+      setError(err.response?.data?.message || err.message);
+      throw err;
+    }
+  };
+
+  const value = {
+    products,
+    loading,
+    error,
+    fetchProducts,
+    addProduct,
+    editProduct,
+    removeProduct
+  };
 
   return (
-    <ProductContext.Provider value={{
-      productos,
-      loading,
-      error,
-      categorias,
-      cargarProductos
-    }}>
+    <ProductContext.Provider value={value}>
       {children}
     </ProductContext.Provider>
   );
+};
+
+export const useProducts = () => {
+  const context = useContext(ProductContext);
+  if (!context) {
+    throw new Error('useProducts debe usarse dentro de un ProductProvider');
+  }
+  return context;
 };

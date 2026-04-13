@@ -1,30 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 
-export const LoginModal = ({ isOpen, onClose }) => {
-  const [isLogin, setIsLogin] = useState(true);
+const LoginModal = ({ onClose }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { login, register } = useAuth();
-
-  useEffect(() => {
-    if (!isOpen) {
-      setEmail('');
-      setPassword('');
-      setName('');
-      setError('');
-      setIsLogin(true);
-    }
-  }, [isOpen]);
-
-  if (!isOpen) return null;
-
-  const handleClose = () => {
-    onClose();
-  };
+  const [isRegister, setIsRegister] = useState(false);
+  const [nombre, setNombre] = useState('');
+  const { login, register, error, loading } = useAuth();
 
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -34,55 +16,46 @@ export const LoginModal = ({ isOpen, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
     
     let result;
-    if (isLogin) {
-      result = await login(email, password);
+    if (isRegister) {
+      result = await register({ nombre, email, password });
     } else {
-      if (!name.trim()) {
-        setError('El nombre es requerido');
-        setLoading(false);
-        return;
-      }
-      result = await register(name, email, password);
+      result = await login(email, password);
     }
     
-    setLoading(false);
-    
-    if (result.success) {
-      handleClose();
-    } else {
-      setError(result.message);
+    if (result?.success) {
+      onClose(); 
     }
   };
 
   return (
-    <div className="modal-overlay-login" onClick={handleOverlayClick}>
-      <div className="modal-login">
+    <div className="modal-overlay" onClick={handleOverlayClick}>
+      <div className="modal-content login-modal">
         <div className="modal-header">
-          <h2>{isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'}</h2>
-          <button className="close-btn" onClick={handleClose}>✕</button>
+          <h2>{isRegister ? '📝 Registrarse' : '🔑 Iniciar Sesión'}</h2>
+          <button className="close-btn" onClick={onClose}>✕</button>
         </div>
-        
-        <form onSubmit={handleSubmit} className="login-form">
-          {!isLogin && (
+
+        <form onSubmit={handleSubmit}>
+          {isRegister && (
             <input
               type="text"
               placeholder="Nombre completo"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
               required
             />
           )}
+          
           <input
             type="email"
-            placeholder="Correo electrónico"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
+          
           <input
             type="password"
             placeholder="Contraseña"
@@ -93,27 +66,25 @@ export const LoginModal = ({ isOpen, onClose }) => {
           
           {error && <div className="error-message">{error}</div>}
           
-          <button type="submit" className="login-btn" disabled={loading}>
-            {loading ? 'Cargando...' : (isLogin ? 'Ingresar' : 'Registrarse')}
+          <button type="submit" disabled={loading}>
+            {loading ? 'Cargando...' : (isRegister ? 'Registrarse' : 'Ingresar')}
           </button>
         </form>
         
-        <div className="modal-footer-login">
-          <p>
-            {isLogin ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}
-            <button 
-              type="button"
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setError('');
-              }} 
-              className="switch-btn"
-            >
-              {isLogin ? 'Regístrate' : 'Inicia sesión'}
-            </button>
-          </p>
+        <div className="modal-footer">
+          <button 
+            type="button" 
+            onClick={() => setIsRegister(!isRegister)}
+            className="switch-mode"
+          >
+            {isRegister 
+              ? '¿Ya tienes cuenta? Inicia Sesión' 
+              : '¿No tienes cuenta? Regístrate'}
+          </button>
         </div>
       </div>
     </div>
   );
 };
+
+export default LoginModal;

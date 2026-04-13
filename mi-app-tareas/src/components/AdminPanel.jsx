@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { getProducts, createProduct, updateProduct, deleteProduct } from '../services/api';
+import { getProducts, createProduct, updateProduct, deleteProduct } from '../api/config'; 
 
-export const AdminPanel = ({ onClose }) => {
-  const { user } = useAuth();
+export const AdminPanel = ({ onClose, editingProduct }) => { 
+  const { usuario } = useAuth();
   const [products, setProducts] = useState([]);
-  const [editingProduct, setEditingProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     nombre: '',
@@ -19,12 +18,23 @@ export const AdminPanel = ({ onClose }) => {
 
   useEffect(() => {
     loadProducts();
-  }, []);
+    if (editingProduct) {
+      setFormData({
+        nombre: editingProduct.nombre || '',
+        precio: editingProduct.precio || '',
+        categoria: editingProduct.categoria || '',
+        imagen: editingProduct.imagen || '',
+        descripcion: editingProduct.descripcion || '',
+        stock: editingProduct.stock || '',
+        rating: editingProduct.rating || '4.5'
+      });
+    }
+  }, [editingProduct]);
 
   const loadProducts = async () => {
     try {
-      const response = await getProducts();
-      setProducts(response.data);
+      const data = await getProducts();
+      setProducts(data);
     } catch (error) {
       console.error('Error al cargar productos:', error);
       alert('Error al cargar productos');
@@ -42,7 +52,6 @@ export const AdminPanel = ({ onClose }) => {
   };
 
   const resetForm = () => {
-    setEditingProduct(null);
     setFormData({
       nombre: '',
       precio: '',
@@ -52,35 +61,6 @@ export const AdminPanel = ({ onClose }) => {
       stock: '',
       rating: '4.5'
     });
-  };
-
-  const handleEdit = (product) => {
-    setEditingProduct(product);
-    setFormData({
-      nombre: product.nombre,
-      precio: product.precio,
-      categoria: product.categoria,
-      imagen: product.imagen,
-      descripcion: product.descripcion,
-      stock: product.stock,
-      rating: product.rating
-    });
-  };
-
-  const handleDelete = async (id) => {
-    if (!window.confirm('¿Seguro que quieres eliminar este producto?')) return;
-    
-    try {
-      setLoading(true);
-      await deleteProduct(id);
-      alert('Producto eliminado');
-      await loadProducts();
-    } catch (error) {
-      console.error('Error al eliminar:', error);
-      alert('Error al eliminar el producto');
-    } finally {
-      setLoading(false);
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -106,7 +86,7 @@ export const AdminPanel = ({ onClose }) => {
       precio: parseFloat(formData.precio),
       categoria: formData.categoria,
       imagen: formData.imagen || 'https://picsum.photos/300/200',
-      descripcion: formData.descripcion,
+      descripcion: formData.descripcion || '',
       stock: parseInt(formData.stock) || 0,
       rating: parseFloat(formData.rating) || 4.5
     };
@@ -121,6 +101,7 @@ export const AdminPanel = ({ onClose }) => {
       }
       resetForm();
       await loadProducts();
+      onClose(); 
     } catch (error) {
       console.error('Error al guardar:', error);
       alert(error.response?.data?.message || 'Error al guardar el producto');
@@ -129,7 +110,8 @@ export const AdminPanel = ({ onClose }) => {
     }
   };
 
-  if (user?.role !== 'admin') {
+  // Verificar permisos de admin
+  if (usuario?.rol !== 'admin') {
     return (
       <div className="modal-overlay-admin" onClick={handleClose}>
         <div className="admin-panel">
@@ -212,11 +194,9 @@ export const AdminPanel = ({ onClose }) => {
                 <button type="submit" disabled={loading}>
                   {loading ? 'Guardando...' : (editingProduct ? 'Actualizar' : 'Crear Producto')}
                 </button>
-                {editingProduct && (
-                  <button type="button" onClick={resetForm} className="cancel-btn">
-                    Cancelar
-                  </button>
-                )}
+                <button type="button" onClick={handleClose} className="cancel-btn">
+                  Cerrar
+                </button>
               </div>
             </form>
           </div>
@@ -226,15 +206,32 @@ export const AdminPanel = ({ onClose }) => {
             <div className="admin-products-grid">
               {products.map(product => (
                 <div key={product.id} className="admin-product-item">
-                  <img src={product.imagen} alt={product.nombre} />
+                  <img src={product.imagen || 'https://picsum.photos/300/200'} alt={product.nombre} />
                   <div className="admin-product-info">
                     <h4>{product.nombre}</h4>
                     <p>${product.precio}</p>
                     <p className="admin-product-category">{product.categoria}</p>
                   </div>
                   <div className="admin-product-actions">
-                    <button onClick={() => handleEdit(product)} className="edit-btn">✏️</button>
-                    <button onClick={() => handleDelete(product.id)} className="delete-btn-admin">🗑️</button>
+                    <button 
+                      onClick={() => {
+                        window.location.reload(); 
+                      }} 
+                      className="edit-btn"
+                    >
+                      ✏️
+                    </button>
+                    <button 
+                      onClick={async () => {
+                        if (window.confirm('¿Eliminar?')) {
+                          await deleteProduct(product.id);
+                          await loadProducts();
+                        }
+                      }} 
+                      className="delete-btn-admin"
+                    >
+                      🗑️
+                    </button>
                   </div>
                 </div>
               ))}
@@ -245,3 +242,5 @@ export const AdminPanel = ({ onClose }) => {
     </div>
   );
 };
+
+export default AdminPanel;
